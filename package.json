@@ -17,25 +17,30 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
+    "typecheck": "node -e \"const {execSync}=require('child_process');['packages/shared-types','apps/web','apps/api'].forEach(p=>execSync('npx tsc --noEmit -p '+p+'/tsconfig.json',{stdio:'inherit'}))\"",
     "test": "echo \"No tests yet\"",
     "prepare": "husky install"
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
-    "typescript": "^5.4.5",
+    "@prisma/client": "^5.15.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "eslint-config-next": "^14.0.0",
     "husky": "^9.0.10",
     "lint-staged": "^15.2.2",
-    "@typescript-eslint/parser": "^7.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "eslint-config-next": "^14.0.0",
+    "prettier": "^3.2.5",
     "prisma": "^5.15.0",
-    "@prisma/client": "^5.15.0"
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md,yaml,yml}": ["prettier --write"]
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
   }
 }
