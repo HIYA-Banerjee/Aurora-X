@@ -1,0 +1,207 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── Enums ───────────────────────────────────────────────────────────────────
+
+enum Visibility {
+  PRIVATE
+  SHARED
+  PUBLIC
+}
+
+enum ConversationRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum RecommendationType {
+  MemoryRecommendation
+  StoryRecommendation
+  PhotoRecommendation
+}
+
+enum FeatureFlagType {
+  GENERIC
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  READ
+}
+
+// ── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  displayName     String?
+  avatar          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  memories        Memory[]
+  photos          Photo[]
+  stories         Story[]
+  conversations   Conversation[]
+  recommendations Recommendation[]
+  auditLogs       AuditLog[]       @relation("Actor")
+}
+
+model Memory {
+  id          String     @id @default(uuid())
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  eventDate   DateTime?
+  location    String?
+  visibility  Visibility @default(PRIVATE)
+  metadata    Json?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  tags        MemoryTag[]
+  photos      Photo[]
+  stories     Story[]
+
+  @@index([ownerId])
+}
+
+model Tag {
+  id       String      @id @default(uuid())
+  name     String      @unique
+  memories MemoryTag[]
+}
+
+model MemoryTag {
+  memoryId String
+  tagId    String
+  memory   Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([memoryId, tagId])
+  @@index([tagId])
+}
+
+model Photo {
+  id         String   @id @default(uuid())
+  ownerId    String
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  width      Int?
+  height     Int?
+  mimeType   String?
+  fileSize   Int?
+  storageKey String?
+  uploadedAt DateTime @default(now())
+  memoryId   String?
+  memory     Memory?  @relation(fields: [memoryId], references: [id])
+
+  @@index([ownerId])
+  @@index([memoryId])
+}
+
+model Story {
+  id               String   @id @default(uuid())
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  sourceMemoryId   String?
+  sourceMemory     Memory?  @relation(fields: [sourceMemoryId], references: [id])
+  generatedContent String
+  generationModel  String
+  promptVersion    String?
+  createdAt        DateTime @default(now())
+
+  @@index([ownerId])
+}
+
+/// pgvector embeddings — vector column is queried via $queryRaw / $executeRaw
+model Embedding {
+  id             String                      @id @default(uuid())
+  vector         Unsupported("vector(1536)")
+  embeddingModel String
+  sourceType     String
+  sourceId       String
+  createdAt      DateTime                    @default(now())
+
+  @@index([sourceType, sourceId])
+}
+
+model Conversation {
+  id            String        @id @default(uuid())
+  participantId String
+  participant   User          @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  messages      ChatMessage[]
+  createdAt     DateTime      @default(now())
+
+  @@index([participantId])
+}
+
+model ChatMessage {
+  id             String           @id @default(uuid())
+  conversationId String
+  conversation   Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           ConversationRole
+  content        String
+  tokenUsage     Int?
+  model          String?
+  createdAt      DateTime         @default(now())
+
+  @@index([conversationId])
+}
+
+model Recommendation {
+  id              String             @id @default(uuid())
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            RecommendationType
+  explanation     String?
+  confidenceScore Float?
+  generatedAt     DateTime           @default(now())
+
+  @@index([userId])
+}
+
+model FeatureFlag {
+  id          String          @id @default(uuid())
+  key         String          @unique
+  enabled     Boolean         @default(false)
+  description String?
+  type        FeatureFlagType @default(GENERIC)
+  createdAt   DateTime        @default(now())
+}
+
+model AuditLog {
+  id        String      @id @default(uuid())
+  actorId   String?
+  actor     User?       @relation("Actor", fields: [actorId], references: [id])
+  action    AuditAction
+  entity    String
+  entityId  String?
+  payload   Json?
+  createdAt DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([entity, entityId])
+}
+
+/// Transactional outbox pattern for async event processing
+model Event {
+  id          String    @id @default(uuid())
+  aggregate   String
+  aggregateId String
+  eventType   String
+  payload     Json?
+  processed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([aggregate, aggregateId])
+  @@index([processed])
+}

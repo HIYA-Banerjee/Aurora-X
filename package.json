@@ -8,9 +8,18 @@
   ],
   "packageManager": "pnpm@9.0.0",
   "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset --force",
     "dev:web": "turbo run dev --filter=web",
+    "dev": "turbo run dev",
     "build": "turbo run build",
-    "dev": "turbo run dev"
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "echo \"No tests yet\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
@@ -21,6 +30,12 @@
     "lint-staged": "^15.2.2",
     "@typescript-eslint/parser": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "eslint-config-next": "^14.0.0"
+    "eslint-config-next": "^14.0.0",
+    "prisma": "^5.15.0",
+    "@prisma/client": "^5.15.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yaml,yml}": ["prettier --write"]
   }
 }
