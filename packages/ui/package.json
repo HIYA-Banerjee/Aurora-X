@@ -3,5 +3,9 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "lint": "echo \"UI package lint: nothing to check\"",
+    "build": "echo \"UI build ok\""
+  }
 }

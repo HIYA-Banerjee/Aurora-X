@@ -15,8 +15,8 @@
     "prisma:reset": "prisma migrate reset --force",
     "dev:web": "turbo run dev --filter=web",
     "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
+    "build": "node -e \"const {execSync}=require('child_process');['packages/shared-types','packages/ui','apps/api','apps/web'].forEach(p=>execSync('pnpm --filter '+p.split('/')[1]+' build',{stdio:'inherit'}))\"",
+    "lint": "node -e \"const {execSync}=require('child_process');['packages/shared-types','apps/web','apps/api'].forEach(p=>execSync('pnpm --filter '+p.split('/')[1]+' lint',{stdio:'inherit'}))\"",
     "typecheck": "node -e \"const {execSync}=require('child_process');['packages/shared-types','apps/web','apps/api'].forEach(p=>execSync('npx tsc --noEmit -p '+p+'/tsconfig.json',{stdio:'inherit'}))\"",
     "test": "echo \"No tests yet\"",
     "prepare": "husky install"

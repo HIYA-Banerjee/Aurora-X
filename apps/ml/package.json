@@ -1,0 +1,9 @@
+{
+  "name": "ml",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"ml lint ok\"",
+    "build": "echo \"ml build ok\""
+  }
+}

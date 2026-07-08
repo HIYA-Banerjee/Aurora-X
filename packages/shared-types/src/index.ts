@@ -6,3 +6,5 @@ export * from './repositories/StoryRepository';
 export * from './repositories/ConversationRepository';
 export * from './repositories/RecommendationRepository';
 export * from './repositories/AuditRepository';
+export * from './role.enum';
+

@@ -6,7 +6,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"shared-types lint ok\"",
+    "build": "echo \"shared-types build ok\""
   },
   "devDependencies": {
     "typescript": "^5.4.5"

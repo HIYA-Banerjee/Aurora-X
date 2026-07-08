@@ -1,3 +1,5 @@
+import { Role } from '../role.enum';
+
 /**
  * UserRepository – interface only, no implementation.
  */
@@ -30,6 +32,8 @@ export interface UserRecord {
   email: string;
   displayName: string | null;
   avatar: string | null;
+  role: Role;
   createdAt: Date;
   updatedAt: Date;
 }
+

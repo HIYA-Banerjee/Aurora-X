@@ -38,21 +38,37 @@ enum AuditAction {
   READ
 }
 
+enum Role {
+  USER
+  PREMIUM
+  ADMIN
+  SYSTEM
+}
+
 // ── Models ──────────────────────────────────────────────────────────────────
 
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  displayName     String?
-  avatar          String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  memories        Memory[]
-  photos          Photo[]
-  stories         Story[]
-  conversations   Conversation[]
-  recommendations Recommendation[]
-  auditLogs       AuditLog[]       @relation("Actor")
+  id                  String           @id @default(uuid())
+  email               String           @unique
+  displayName         String?
+  avatar              String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  passwordHash        String?
+  role                Role             @default(USER)
+  refreshTokenVersion Int              @default(0)
+  hashedRefreshToken  String?
+  failedLoginAttempts Int              @default(0)
+  lockedUntil         DateTime?
+  emailVerified       Boolean          @default(false)
+  emailVerifiedAt     DateTime?
+  lastLogin           DateTime?
+  memories            Memory[]
+  photos              Photo[]
+  stories             Story[]
+  conversations       Conversation[]
+  recommendations     Recommendation[]
+  auditLogs           AuditLog[]       @relation("Actor")
 }
 
 model Memory {

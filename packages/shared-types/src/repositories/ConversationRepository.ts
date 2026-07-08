@@ -7,6 +7,10 @@ export interface CreateConversationInput {
   participantId: string;
 }
 
+export interface UpdateConversationInput {
+  participantId?: string;
+}
+
 export interface CreateChatMessageInput {
   conversationId: string;
   role: ConversationRole;
