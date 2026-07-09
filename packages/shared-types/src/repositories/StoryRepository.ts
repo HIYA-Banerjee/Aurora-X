@@ -28,6 +28,9 @@ export interface StoryRecord {
   generatedContent: string;
   generationModel: string;
   promptVersion: string | null;
+  archived?: boolean;
+  published?: boolean;
+  deletedAt?: Date | null;
   createdAt: Date;
 }
 

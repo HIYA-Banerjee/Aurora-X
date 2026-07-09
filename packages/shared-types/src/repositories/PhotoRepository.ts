@@ -35,6 +35,8 @@ export interface PhotoRecord {
   fileSize: number | null;
   storageKey: string | null;
   memoryId: string | null;
+  archived?: boolean;
+  deletedAt?: Date | null;
   uploadedAt: Date;
 }
 

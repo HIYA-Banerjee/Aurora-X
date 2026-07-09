@@ -81,6 +81,8 @@ model Memory {
   location    String?
   visibility  Visibility @default(PRIVATE)
   metadata    Json?
+  archived    Boolean    @default(false)
+  deletedAt   DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   tags        MemoryTag[]
@@ -116,8 +118,11 @@ model Photo {
   fileSize   Int?
   storageKey String?
   uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   memoryId   String?
   memory     Memory?  @relation(fields: [memoryId], references: [id])
+  archived   Boolean  @default(false)
+  deletedAt  DateTime?
 
   @@index([ownerId])
   @@index([memoryId])
@@ -133,6 +138,10 @@ model Story {
   generationModel  String
   promptVersion    String?
   createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  archived         Boolean  @default(false)
+  published        Boolean  @default(false)
+  deletedAt        DateTime?
 
   @@index([ownerId])
 }

@@ -12,6 +12,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserRepository } from '../../repositories/UserRepository';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { OwnershipService } from '../../common/services/ownership.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { RolesGuard } from './guards/roles.guard';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => [
         {
-          ttl: (config.get<number>('THROTTLER_TTL') || 60) * 1000, // converted to milliseconds in modern NestJS throttler versions
+          ttl: (config.get<number>('THROTTLER_TTL') || 60) * 1000,
           limit: config.get<number>('THROTTLER_LIMIT') || 10,
         },
       ],
@@ -33,6 +34,7 @@ import { RolesGuard } from './guards/roles.guard';
     AuthMetricsService,
     JwtStrategy,
     UserRepository,
+    OwnershipService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
@@ -46,6 +48,6 @@ import { RolesGuard } from './guards/roles.guard';
       useClass: RolesGuard,
     },
   ],
-  exports: [AuthService, AuthMetricsService, UserRepository],
+  exports: [AuthService, AuthMetricsService, UserRepository, OwnershipService],
 })
 export class AuthModule {}

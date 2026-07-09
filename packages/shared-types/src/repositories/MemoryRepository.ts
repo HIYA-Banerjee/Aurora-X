@@ -37,6 +37,8 @@ export interface MemoryRecord {
   location: string | null;
   visibility: Visibility;
   metadata: Record<string, unknown> | null;
+  archived?: boolean;
+  deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
