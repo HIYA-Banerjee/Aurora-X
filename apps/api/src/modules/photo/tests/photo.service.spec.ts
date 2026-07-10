@@ -108,7 +108,9 @@ describe('PhotoService', () => {
       mockStorageProvider.uploadFile.mockResolvedValue('photos/uuid.jpg');
       mockStorageProvider.deleteFile.mockResolvedValue(undefined);
       // DB create fails after both storage uploads have succeeded
-      mockPrisma.photo.create.mockRejectedValue(new Error('DB connection lost'));
+      mockPrisma.photo.create.mockRejectedValue(
+        new Error('DB connection lost'),
+      );
 
       await expect(
         service.uploadPhoto('user-1', validFile, undefined),
@@ -122,7 +124,9 @@ describe('PhotoService', () => {
   describe('findOne', () => {
     it('should throw NotFoundException when photo does not exist', async () => {
       mockPrisma.photo.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('user-1', 'non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne('user-1', 'non-existent-id'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should return photo when found and ownership passes', async () => {

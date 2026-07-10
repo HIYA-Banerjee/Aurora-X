@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HealthController, DatabaseHealthIndicator } from '../health.controller';
+import {
+  HealthController,
+  DatabaseHealthIndicator,
+} from '../health.controller';
 import { HealthCheckService } from '@nestjs/terminus';
 import { PrismaService } from '../../prisma/prisma.service';
 

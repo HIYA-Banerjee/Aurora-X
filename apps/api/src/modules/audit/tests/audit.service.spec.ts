@@ -32,7 +32,9 @@ describe('AuditService', () => {
   describe('findOne', () => {
     it('should throw NotFoundException when audit log does not exist', async () => {
       mockPrisma.auditLog.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should return audit log when found', async () => {

@@ -3,7 +3,11 @@ import { MemoryService } from '../memory.service';
 import { MemoryRepository } from '../../../repositories/MemoryRepository';
 import { OwnershipService } from '../../../common/services/ownership.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 
 const mockMemoryRepo = {
   findById: jest.fn(),
@@ -46,17 +50,31 @@ describe('MemoryService', () => {
   describe('findOne', () => {
     it('should throw NotFoundException when memory does not exist', async () => {
       mockMemoryRepo.findById.mockResolvedValue(null);
-      await expect(service.findOne('user-1', 'non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne('user-1', 'non-existent-id'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException when memory is soft-deleted', async () => {
-      const deletedMemory = { id: 'mem-1', ownerId: 'user-1', deletedAt: new Date(), title: 'Test' };
+      const deletedMemory = {
+        id: 'mem-1',
+        ownerId: 'user-1',
+        deletedAt: new Date(),
+        title: 'Test',
+      };
       mockMemoryRepo.findById.mockResolvedValue(deletedMemory);
-      await expect(service.findOne('user-1', 'mem-1')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('user-1', 'mem-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should return memory when found and ownership passes', async () => {
-      const memory = { id: 'mem-1', ownerId: 'user-1', deletedAt: null, title: 'Test' };
+      const memory = {
+        id: 'mem-1',
+        ownerId: 'user-1',
+        deletedAt: null,
+        title: 'Test',
+      };
       mockMemoryRepo.findById.mockResolvedValue(memory);
       mockOwnershipService.checkOwnership.mockReturnValue(undefined);
       const result = await service.findOne('user-1', 'mem-1');
@@ -64,12 +82,19 @@ describe('MemoryService', () => {
     });
 
     it('should throw ForbiddenException when user does not own the memory', async () => {
-      const memory = { id: 'mem-1', ownerId: 'user-2', deletedAt: null, title: 'Test' };
+      const memory = {
+        id: 'mem-1',
+        ownerId: 'user-2',
+        deletedAt: null,
+        title: 'Test',
+      };
       mockMemoryRepo.findById.mockResolvedValue(memory);
       mockOwnershipService.checkOwnership.mockImplementation(() => {
         throw new ForbiddenException('You do not own this resource');
       });
-      await expect(service.findOne('user-1', 'mem-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.findOne('user-1', 'mem-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -95,7 +120,13 @@ describe('MemoryService', () => {
 
     it('should succeed when updatedAt matches the current DB value', async () => {
       const now = new Date('2026-07-01T00:00:00.000Z');
-      const memory = { id: 'mem-1', ownerId: 'user-1', deletedAt: null, updatedAt: now, tags: [] };
+      const memory = {
+        id: 'mem-1',
+        ownerId: 'user-1',
+        deletedAt: null,
+        updatedAt: now,
+        tags: [],
+      };
       mockPrisma.memory.findUnique.mockResolvedValue(memory);
       mockOwnershipService.checkOwnership.mockReturnValue(undefined);
       mockPrisma.memory.update.mockResolvedValue(memory);
@@ -113,19 +144,33 @@ describe('MemoryService', () => {
 
   describe('delete', () => {
     it('should soft-delete an owned memory', async () => {
-      const memory = { id: 'mem-1', ownerId: 'user-1', deletedAt: null, title: 'Test' };
+      const memory = {
+        id: 'mem-1',
+        ownerId: 'user-1',
+        deletedAt: null,
+        title: 'Test',
+      };
       mockMemoryRepo.findById.mockResolvedValue(memory);
       mockOwnershipService.checkOwnership.mockReturnValue(undefined);
-      mockMemoryRepo.softDelete.mockResolvedValue({ ...memory, deletedAt: new Date() });
+      mockMemoryRepo.softDelete.mockResolvedValue({
+        ...memory,
+        deletedAt: new Date(),
+      });
 
       await service.delete('user-1', 'mem-1');
       expect(mockMemoryRepo.softDelete).toHaveBeenCalledWith('mem-1');
     });
 
     it('should throw NotFoundException when trying to delete already-deleted memory', async () => {
-      const deletedMemory = { id: 'mem-1', ownerId: 'user-1', deletedAt: new Date() };
+      const deletedMemory = {
+        id: 'mem-1',
+        ownerId: 'user-1',
+        deletedAt: new Date(),
+      };
       mockMemoryRepo.findById.mockResolvedValue(deletedMemory);
-      await expect(service.delete('user-1', 'mem-1')).rejects.toThrow(NotFoundException);
+      await expect(service.delete('user-1', 'mem-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

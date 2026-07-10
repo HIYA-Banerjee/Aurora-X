@@ -49,7 +49,11 @@ describe('ConversationService', () => {
 
   describe('create', () => {
     it('should create a new conversation', async () => {
-      const convo = { id: 'conv-1', participantId: 'user-1', createdAt: new Date() };
+      const convo = {
+        id: 'conv-1',
+        participantId: 'user-1',
+        createdAt: new Date(),
+      };
       mockPrisma.conversation.create.mockResolvedValue(convo);
 
       const result = await service.create('user-1', {});
@@ -61,7 +65,9 @@ describe('ConversationService', () => {
   describe('findOne', () => {
     it('should throw NotFoundException when conversation does not exist', async () => {
       mockPrisma.conversation.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('user-1', 'non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne('user-1', 'non-existent-id'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw ForbiddenException when user is not the participant', async () => {
@@ -71,7 +77,9 @@ describe('ConversationService', () => {
         participant: { id: 'user-2', email: 'other@test.com' },
       };
       mockPrisma.conversation.findUnique.mockResolvedValue(convo);
-      await expect(service.findOne('user-1', 'conv-1', 'USER')).rejects.toThrow(ForbiddenException);
+      await expect(service.findOne('user-1', 'conv-1', 'USER')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should allow ADMIN to access any conversation', async () => {
@@ -117,7 +125,9 @@ describe('ConversationService', () => {
       mockPrisma.conversation.findUnique.mockResolvedValue(convo);
       mockPrisma.chatMessage.findMany.mockResolvedValue(messages);
 
-      const result = await service.getMessages('user-1', 'conv-1', { limit: 2 });
+      const result = await service.getMessages('user-1', 'conv-1', {
+        limit: 2,
+      });
       expect(result.items).toHaveLength(2);
       expect(result.nextCursor).toBe('msg-2');
     });
